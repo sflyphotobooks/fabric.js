@@ -387,7 +387,13 @@
       ctx.lineWidth = 1;
 
       ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-      ctx.strokeStyle = ctx.fillStyle = this.cornerColor;
+      ctx.strokeStyle = this.cornerColor
+      if (typeof this.cornerFillColor !== 'undefined') {
+        ctx.fillStyle = this.cornerFillColor
+        methodName = 'strokeRect';
+      } else {
+        ctx.fillStyle = this.cornerColor;
+      }
 
       // top-left
       this._drawControl('tl', ctx, methodName,
@@ -451,7 +457,11 @@
       var size = this.cornerSize;
 
       if (this.isControlVisible(control)) {
-        isVML() || this.transparentCorners || ctx.clearRect(left, top, size, size);
+        isVML() || this.transparentCorners || typeof this.cornerFillColor !== 'undefined'
+        || ctx.clearRect(left, top, size, size);
+        if (this.cornerFillColor && !this.transparentCorners) {
+          ctx.fillRect(left, top, size, size);
+        }
         ctx[methodName](left, top, size, size);
       }
     },
