@@ -387,9 +387,9 @@
       ctx.lineWidth = 1;
 
       ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-      ctx.strokeStyle = this.cornerColor
+      ctx.strokeStyle = this.cornerColor;
       if (typeof this.cornerFillColor !== 'undefined') {
-        ctx.fillStyle = this.cornerFillColor
+        ctx.fillStyle = this.cornerFillColor;
         methodName = 'strokeRect';
       } else {
         ctx.fillStyle = this.cornerColor;

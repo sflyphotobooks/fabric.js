@@ -1,5 +1,12 @@
 var testrunner = require('qunit');
 
+/*
+To test:
+node build.js modules=ALL exclude=gestures,cufon,json minifier=uglifyjs
+npm test
+*/
+
+testrunner.options.maxBlockDuration = 60000;
 testrunner.options.log.summary = true;
 testrunner.options.log.tests = false;
 testrunner.options.log.assertions = false;

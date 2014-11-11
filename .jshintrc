@@ -37,5 +37,5 @@
   "maxdepth":       4,
   // "maxlen":         100
   // "maxparams":      4
-  "maxstatements":  30
+  "maxstatements":  40
 }
