@@ -475,7 +475,7 @@
           target = t.target,
           lockScalingX = target.get('lockScalingX'),
           lockScalingY = target.get('lockScalingY'),
-          lockScalingFlip = target.get('lockScalingFlip');
+          lockScalingFlip = target.get('lockScalingFlip'),
           minSize = target.get('minSize');
 
       if (lockScalingX && lockScalingY) {
@@ -514,12 +514,12 @@
 
       if (minSize && target.width * transform.newScaleX <= minSize && transform.newScaleX < target.scaleX) {
         transform.newScaleX = minSize / target.width;
-        transform.forceNewScale = true
+        transform.forceNewScale = true;
       }
 
       if (minSize && target.height * transform.newScaleY <= minSize && transform.newScaleY < target.scaleY) {
         transform.newScaleY = minSize / target.height;
-        transform.forceNewScale = true
+        transform.forceNewScale = true;
       }
 
       if (by === 'equally' && !lockScalingX && !lockScalingY) {
@@ -546,8 +546,8 @@
     _scaleObjectEqually: function(localMouse, target, transform) {
       
       if (transform.forceNewScale) {
-        transform.newScaleX = Math.max(transform.newScaleX, transform.newScaleY)
-        transform.newScaleY = transform.newScaleX
+        transform.newScaleX = Math.max(transform.newScaleX, transform.newScaleY);
+        transform.newScaleY = transform.newScaleX;
       } else {
         var dist = localMouse.y + localMouse.x,
             lastDist = (target.height + (target.strokeWidth)) * transform.original.scaleY +

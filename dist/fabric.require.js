@@ -6528,8 +6528,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, {
             }
         },
         _scaleObject: function(x, y, by) {
-            var t = this._currentTransform, target = t.target, lockScalingX = target.get("lockScalingX"), lockScalingY = target.get("lockScalingY"), lockScalingFlip = target.get("lockScalingFlip");
-            minSize = target.get("minSize");
+            var t = this._currentTransform, target = t.target, lockScalingX = target.get("lockScalingX"), lockScalingY = target.get("lockScalingY"), lockScalingFlip = target.get("lockScalingFlip"), minSize = target.get("minSize");
             if (lockScalingX && lockScalingY) {
                 return;
             }
@@ -7002,13 +7001,34 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, {
             }
         },
         _onGesture: function(e, self) {
-            this.__onTransformGesture && this.__onTransformGesture(e, self);
+            try {
+                this.__onTransformGesture && this.__onTransformGesture(e, self);
+            } catch (error) {
+                this.fire("error", {
+                    error: error,
+                    handler: "_onGesture"
+                });
+            }
         },
         _onDrag: function(e, self) {
-            this.__onDrag && this.__onDrag(e, self);
+            try {
+                this.__onDrag && this.__onDrag(e, self);
+            } catch (error) {
+                this.fire("error", {
+                    error: error,
+                    handler: "_onDrag"
+                });
+            }
         },
         _onMouseWheel: function(e, self) {
-            this.__onMouseWheel && this.__onMouseWheel(e, self);
+            try {
+                this.__onMouseWheel && this.__onMouseWheel(e, self);
+            } catch (error) {
+                this.fire("error", {
+                    error: error,
+                    handler: "_onMouseWheel"
+                });
+            }
         },
         _onOrientationChange: function(e, self) {
             this.__onOrientationChange && this.__onOrientationChange(e, self);
@@ -7030,26 +7050,47 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, {
             }
         },
         _onDblClick: function(e) {
-            this.__onDblClick(e);
+            try {
+                this.__onDblClick(e);
+            } catch (error) {
+                this.fire("error", {
+                    error: error,
+                    handler: "_onDblClick"
+                });
+            }
         },
         _onMouseUp: function(e) {
-            this.__onMouseUp(e);
-            removeListener(fabric.document, "mouseup", this._onMouseUp);
-            removeListener(fabric.document, "touchend", this._onMouseUp);
-            removeListener(fabric.document, "mousemove", this._onMouseMove);
-            removeListener(fabric.document, "touchmove", this._onMouseMove);
-            addListener(this.upperCanvasEl, "mousemove", this._onMouseMove);
-            addListener(this.upperCanvasEl, "touchmove", this._onMouseMove);
-            if (e.type === "touchend") {
-                var _this = this;
-                setTimeout(function() {
-                    addListener(_this.upperCanvasEl, "mousedown", _this._onMouseDown);
-                }, 400);
+            try {
+                this.__onMouseUp(e);
+                removeListener(fabric.document, "mouseup", this._onMouseUp);
+                removeListener(fabric.document, "touchend", this._onMouseUp);
+                removeListener(fabric.document, "mousemove", this._onMouseMove);
+                removeListener(fabric.document, "touchmove", this._onMouseMove);
+                addListener(this.upperCanvasEl, "mousemove", this._onMouseMove);
+                addListener(this.upperCanvasEl, "touchmove", this._onMouseMove);
+                if (e.type === "touchend") {
+                    var _this = this;
+                    setTimeout(function() {
+                        addListener(_this.upperCanvasEl, "mousedown", _this._onMouseDown);
+                    }, 400);
+                }
+            } catch (error) {
+                this.fire("error", {
+                    error: error,
+                    handler: "_onMouseUp"
+                });
             }
         },
         _onMouseMove: function(e) {
-            !this.allowTouchScrolling && e.preventDefault && e.preventDefault();
-            this.__onMouseMove(e);
+            try {
+                !this.allowTouchScrolling && e.preventDefault && e.preventDefault();
+                this.__onMouseMove(e);
+            } catch (error) {
+                this.fire("error", {
+                    error: error,
+                    handler: "_onMouseMove"
+                });
+            }
         },
         _onResize: function() {
             this.calcOffset();

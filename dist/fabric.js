@@ -11764,7 +11764,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
           target = t.target,
           lockScalingX = target.get('lockScalingX'),
           lockScalingY = target.get('lockScalingY'),
-          lockScalingFlip = target.get('lockScalingFlip');
+          lockScalingFlip = target.get('lockScalingFlip'),
           minSize = target.get('minSize');
 
       if (lockScalingX && lockScalingY) {
@@ -11803,12 +11803,12 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
 
       if (minSize && target.width * transform.newScaleX <= minSize && transform.newScaleX < target.scaleX) {
         transform.newScaleX = minSize / target.width;
-        transform.forceNewScale = true
+        transform.forceNewScale = true;
       }
 
       if (minSize && target.height * transform.newScaleY <= minSize && transform.newScaleY < target.scaleY) {
         transform.newScaleY = minSize / target.height;
-        transform.forceNewScale = true
+        transform.forceNewScale = true;
       }
 
       if (by === 'equally' && !lockScalingX && !lockScalingY) {
@@ -11835,8 +11835,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
     _scaleObjectEqually: function(localMouse, target, transform) {
       
       if (transform.forceNewScale) {
-        transform.newScaleX = Math.max(transform.newScaleX, transform.newScaleY)
-        transform.newScaleY = transform.newScaleX
+        transform.newScaleX = Math.max(transform.newScaleX, transform.newScaleY);
+        transform.newScaleY = transform.newScaleX;
       } else {
         var dist = localMouse.y + localMouse.x,
             lastDist = (target.height + (target.strokeWidth)) * transform.original.scaleY +
@@ -12574,7 +12574,11 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} [self] Inner Event object
      */
     _onGesture: function(e, self) {
-      this.__onTransformGesture && this.__onTransformGesture(e, self);
+      try {
+        this.__onTransformGesture && this.__onTransformGesture(e, self);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onGesture'});
+      }
     },
 
     /**
@@ -12583,7 +12587,11 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} [self] Inner Event object
      */
     _onDrag: function(e, self) {
-      this.__onDrag && this.__onDrag(e, self);
+      try {
+        this.__onDrag && this.__onDrag(e, self);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onDrag'});
+      }
     },
 
     /**
@@ -12592,7 +12600,11 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} [self] Inner Event object
      */
     _onMouseWheel: function(e, self) {
-      this.__onMouseWheel && this.__onMouseWheel(e, self);
+      try {
+        this.__onMouseWheel && this.__onMouseWheel(e, self);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onMouseWheel'});
+      }
     },
 
     /**
@@ -12641,7 +12653,11 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on double click
      */
     _onDblClick: function (e) {
-      this.__onDblClick(e);
+      try {
+        this.__onDblClick(e);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onDblClick'});
+      }
     },
 
     /**
@@ -12649,24 +12665,28 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on mouseup
      */
     _onMouseUp: function (e) {
-      this.__onMouseUp(e);
+      try {
+        this.__onMouseUp(e);
 
-      removeListener(fabric.document, 'mouseup', this._onMouseUp);
-      removeListener(fabric.document, 'touchend', this._onMouseUp);
+        removeListener(fabric.document, 'mouseup', this._onMouseUp);
+        removeListener(fabric.document, 'touchend', this._onMouseUp);
 
-      removeListener(fabric.document, 'mousemove', this._onMouseMove);
-      removeListener(fabric.document, 'touchmove', this._onMouseMove);
+        removeListener(fabric.document, 'mousemove', this._onMouseMove);
+        removeListener(fabric.document, 'touchmove', this._onMouseMove);
 
-      addListener(this.upperCanvasEl, 'mousemove', this._onMouseMove);
-      addListener(this.upperCanvasEl, 'touchmove', this._onMouseMove);
+        addListener(this.upperCanvasEl, 'mousemove', this._onMouseMove);
+        addListener(this.upperCanvasEl, 'touchmove', this._onMouseMove);
 
-      if (e.type === 'touchend') {
-        // Wait 400ms before rebinding mousedown to prevent double triggers
-        // from touch devices
-        var _this = this;
-        setTimeout(function() {
-          addListener(_this.upperCanvasEl, 'mousedown', _this._onMouseDown);
-        }, 400);
+        if (e.type === 'touchend') {
+          // Wait 400ms before rebinding mousedown to prevent double triggers
+          // from touch devices
+          var _this = this;
+          setTimeout(function() {
+            addListener(_this.upperCanvasEl, 'mousedown', _this._onMouseDown);
+          }, 400);
+        }      
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onMouseUp'});
       }
     },
 
@@ -12675,8 +12695,12 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
      * @param {Event} e Event object fired on mousemove
      */
     _onMouseMove: function (e) {
-      !this.allowTouchScrolling && e.preventDefault && e.preventDefault();
-      this.__onMouseMove(e);
+      try {
+        !this.allowTouchScrolling && e.preventDefault && e.preventDefault();
+        this.__onMouseMove(e);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onMouseMove'});
+      }
     },
 
     /**
@@ -16787,9 +16811,9 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       ctx.lineWidth = 1;
 
       ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-      ctx.strokeStyle = this.cornerColor
+      ctx.strokeStyle = this.cornerColor;
       if (typeof this.cornerFillColor !== 'undefined') {
-        ctx.fillStyle = this.cornerFillColor
+        ctx.fillStyle = this.cornerFillColor;
         methodName = 'strokeRect';
       } else {
         ctx.fillStyle = this.cornerColor;

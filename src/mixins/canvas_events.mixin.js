@@ -102,7 +102,11 @@
      * @param {Event} [self] Inner Event object
      */
     _onGesture: function(e, self) {
-      this.__onTransformGesture && this.__onTransformGesture(e, self);
+      try {
+        this.__onTransformGesture && this.__onTransformGesture(e, self);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onGesture'});
+      }
     },
 
     /**
@@ -111,7 +115,11 @@
      * @param {Event} [self] Inner Event object
      */
     _onDrag: function(e, self) {
-      this.__onDrag && this.__onDrag(e, self);
+      try {
+        this.__onDrag && this.__onDrag(e, self);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onDrag'});
+      }
     },
 
     /**
@@ -120,7 +128,11 @@
      * @param {Event} [self] Inner Event object
      */
     _onMouseWheel: function(e, self) {
-      this.__onMouseWheel && this.__onMouseWheel(e, self);
+      try {
+        this.__onMouseWheel && this.__onMouseWheel(e, self);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onMouseWheel'});
+      }
     },
 
     /**
@@ -169,7 +181,11 @@
      * @param {Event} e Event object fired on double click
      */
     _onDblClick: function (e) {
-      this.__onDblClick(e);
+      try {
+        this.__onDblClick(e);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onDblClick'});
+      }
     },
 
     /**
@@ -177,24 +193,28 @@
      * @param {Event} e Event object fired on mouseup
      */
     _onMouseUp: function (e) {
-      this.__onMouseUp(e);
+      try {
+        this.__onMouseUp(e);
 
-      removeListener(fabric.document, 'mouseup', this._onMouseUp);
-      removeListener(fabric.document, 'touchend', this._onMouseUp);
+        removeListener(fabric.document, 'mouseup', this._onMouseUp);
+        removeListener(fabric.document, 'touchend', this._onMouseUp);
 
-      removeListener(fabric.document, 'mousemove', this._onMouseMove);
-      removeListener(fabric.document, 'touchmove', this._onMouseMove);
+        removeListener(fabric.document, 'mousemove', this._onMouseMove);
+        removeListener(fabric.document, 'touchmove', this._onMouseMove);
 
-      addListener(this.upperCanvasEl, 'mousemove', this._onMouseMove);
-      addListener(this.upperCanvasEl, 'touchmove', this._onMouseMove);
+        addListener(this.upperCanvasEl, 'mousemove', this._onMouseMove);
+        addListener(this.upperCanvasEl, 'touchmove', this._onMouseMove);
 
-      if (e.type === 'touchend') {
-        // Wait 400ms before rebinding mousedown to prevent double triggers
-        // from touch devices
-        var _this = this;
-        setTimeout(function() {
-          addListener(_this.upperCanvasEl, 'mousedown', _this._onMouseDown);
-        }, 400);
+        if (e.type === 'touchend') {
+          // Wait 400ms before rebinding mousedown to prevent double triggers
+          // from touch devices
+          var _this = this;
+          setTimeout(function() {
+            addListener(_this.upperCanvasEl, 'mousedown', _this._onMouseDown);
+          }, 400);
+        }      
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onMouseUp'});
       }
     },
 
@@ -203,8 +223,12 @@
      * @param {Event} e Event object fired on mousemove
      */
     _onMouseMove: function (e) {
-      !this.allowTouchScrolling && e.preventDefault && e.preventDefault();
-      this.__onMouseMove(e);
+      try {
+        !this.allowTouchScrolling && e.preventDefault && e.preventDefault();
+        this.__onMouseMove(e);
+      } catch(error) {
+        this.fire('error', {error:error, handler:'_onMouseMove'});
+      }
     },
 
     /**
