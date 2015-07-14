@@ -793,6 +793,56 @@
       this.renderAll();
       return this;
     },
+    //https://github.com/kangax/fabric.js/issues/1979#issuecomment-75522942
+    renderFrame: function(allOnTop) {
+      var _this = this;
+
+      if(this.stopRendering){  //if stopRendering is flagged, cancel the animation loop
+          this.rendering = false; 
+          return;
+      }
+
+      var raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame
+      raf(this.renderFrame.bind(this, allOnTop));
+
+      var canvasToDrawOn = this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
+          activeGroup = this.getActiveGroup();
+
+      if (this.contextTop && this.selection && !this._groupSelector) {
+          this.clearContext(this.contextTop);
+      }
+
+      if (!allOnTop) {
+          this.clearContext(canvasToDrawOn);
+      }
+
+      this.fire('before:render');
+
+      if (this.clipTo) {
+          fabric.util.clipContext(this, canvasToDrawOn);
+      }
+
+      this._renderBackground(canvasToDrawOn);
+      this._renderObjects(canvasToDrawOn, activeGroup);
+      this._renderActiveGroup(canvasToDrawOn, activeGroup);
+
+      if (this.clipTo) {
+          canvasToDrawOn.restore();
+      }
+
+      this._renderOverlay(canvasToDrawOn);
+
+      if (this.controlsAboveOverlay && this.interactive) {
+          this.drawControls(canvasToDrawOn);
+      }
+
+
+      this.fire('after:render');
+
+      this.renderTimeout = setTimeout(function(){
+          _this.stopRendering = true; //allow the loop to run for 300ms before stopping
+      }, 300);
+    },
 
     /**
      * Renders both the top canvas and the secondary container canvas.
@@ -801,38 +851,12 @@
      * @chainable
      */
     renderAll: function (allOnTop) {
-      var canvasToDrawOn = this[(allOnTop === true && this.interactive) ? 'contextTop' : 'contextContainer'],
-          activeGroup = this.getActiveGroup();
-
-      if (this.contextTop && this.selection && !this._groupSelector) {
-        this.clearContext(this.contextTop);
-      }
-
-      if (!allOnTop) {
-        this.clearContext(canvasToDrawOn);
-      }
-
-      this.fire('before:render');
-
-      if (this.clipTo) {
-        fabric.util.clipContext(this, canvasToDrawOn);
-      }
-
-      this._renderBackground(canvasToDrawOn);
-      this._renderObjects(canvasToDrawOn, activeGroup);
-      this._renderActiveGroup(canvasToDrawOn, activeGroup);
-
-      if (this.clipTo) {
-        canvasToDrawOn.restore();
-      }
-
-      this._renderOverlay(canvasToDrawOn);
-
-      if (this.controlsAboveOverlay && this.interactive) {
-        this.drawControls(canvasToDrawOn);
-      }
-
-      this.fire('after:render');
+      clearTimeout(this.renderTimeout); //cancel the timeout which artificially stops the render loop
+      if(this.rendering){ return this; } //if we are already rendering, then short circuit
+      this.rendering = true; 
+      this.stopRendering = false;
+      //start the render loop
+      this.renderFrame(allOnTop);
 
       return this;
     },
