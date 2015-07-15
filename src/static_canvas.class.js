@@ -798,6 +798,7 @@
       var _this = this;
 
       if(this.stopRendering){  //if stopRendering is flagged, cancel the animation loop
+          this.fire('stopped:render');
           this.rendering = false; 
           return;
       }

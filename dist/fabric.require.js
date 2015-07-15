@@ -3135,6 +3135,7 @@ fabric.Pattern = fabric.util.createClass({
         renderFrame: function(allOnTop) {
             var _this = this;
             if (this.stopRendering) {
+                this.fire("stopped:render");
                 this.rendering = false;
                 return;
             }

@@ -6220,11 +6220,12 @@ fabric.Pattern = fabric.util.createClass(/** @lends fabric.Pattern.prototype */ 
       this.renderAll();
       return this;
     },
-
+    //https://github.com/kangax/fabric.js/issues/1979#issuecomment-75522942
     renderFrame: function(allOnTop) {
       var _this = this;
 
       if(this.stopRendering){  //if stopRendering is flagged, cancel the animation loop
+          this.fire('stopped:render');
           this.rendering = false; 
           return;
       }
